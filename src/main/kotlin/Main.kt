@@ -3,6 +3,41 @@ import java.io.File
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 class watermark(){
+    class second_Photo(){
+        var Width=0
+        var Height=0
+        var N_components=0
+        var N_color_components=0
+        var pixel=0
+        var Transparency=0
+        var name =""
+        var watermark=""
+        fun get_info(){
+            val image: BufferedImage? =ImageIO.read(File(name))
+            if (image != null) {
+                Width = image.width
+                Height = image.height
+                N_components = image.colorModel.numComponents
+                N_color_components = image.colorModel.numColorComponents
+                pixel = image.colorModel.pixelSize
+                Transparency = image.transparency
+            }
+        }
+
+
+
+        fun set_name(){
+         println("Input the watermark image filename:")
+            val filePath = readln() // Replace this with the actual file path
+
+            val file = File(filePath)
+            if (!file.exists()) {
+                println("The file $filePath doesn't exist.")
+                exitProcess(0)
+            }
+            name=filePath
+        }
+    }
     var Width=0
     var Height=0
     var N_components=0
@@ -10,10 +45,18 @@ class watermark(){
     var pixel=0
     var Transparency=0
     var name =""
+    var watermark=second_Photo()
     init{
         get_name()
         get_info()
+        add_watermark()
         printInfo()
+    }
+    fun add_watermark(){
+      //  println("Input the image filename:")
+
+        watermark.set_name()
+        watermark.get_info()
     }
     fun get_name(){
         println("Input the image filename:")
@@ -26,7 +69,17 @@ class watermark(){
         }
         name=filePath
     }
+    fun get_watermark(){
+        println("Input the watermark image filename:")
+        val filePath = readln() // Replace this with the actual file path
 
+        val file = File(filePath)
+        if (!file.exists()) {
+            println("The file $filePath doesn't exist.")
+            exitProcess(0)
+        }
+        name=filePath
+    }
     fun get_info(){
         val image: BufferedImage? =ImageIO.read(File(name))
         if (image != null) {
