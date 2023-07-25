@@ -55,6 +55,8 @@ class watermark(){
     fun add_watermark(){
       //  println("Input the image filename:")
 
+
+
         watermark.set_name()
         watermark.get_info()
     }
