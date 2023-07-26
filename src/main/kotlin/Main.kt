@@ -1,3 +1,4 @@
+import java.awt.Color
 import kotlin.system.exitProcess
 import java.io.File
 import javax.imageio.ImageIO
@@ -22,6 +23,8 @@ class watermark(){
                 pixel = image.colorModel.pixelSize
                 Transparency = image.transparency
             }
+
+
             if(N_color_components!=3){
 
                 println("The number of watermark color components isn't 3.")
@@ -37,6 +40,8 @@ class watermark(){
                 println("The watermark isn't 24 or 32-bit.")
                 exitProcess(0)
             }
+
+
         }
 
 
@@ -61,16 +66,47 @@ class watermark(){
     var Transparency=0
     var name =""
     var watermark=second_Photo()
+    var out_File=""
     var  transparency_Percent=0
+
     init{
         get_name()
         get_info()
         add_watermark()
         Percentage()
-        // printInfo()
+        set_OutFile()
+        compare_Two()
     }
-    fun compare_Two(){
-    }
+
+        fun compare_Two(){
+            val image: BufferedImage =ImageIO.read(File(name))
+            val watermark: BufferedImage =ImageIO.read(File(watermark.name))
+            val output = BufferedImage(Width, Height, BufferedImage.TYPE_INT_RGB)
+
+            for (x in 0 .. image.width-1) {               // For every column.
+                for (y in 0 .. image.height-1) {          // For every row
+                    // val color = Color(image.getRGB(x, y))  // Read color from the (x, y) position
+
+                    val i = Color(image.getRGB(x, y))
+                    val w = Color(watermark.getRGB(x, y))              // Access the Blue color value
+                    // Use color.red in case the Red color is needed
+
+                    val r =Math.abs ((Width * w.red + (100 - Width) * i.red) / 1000)
+                    val g = Math.abs(Width * w.green + (100 - Width) * i.green) / 1000
+                    val b = Math.abs(Width * w.blue + (100 - Width) * i.blue) / 1000
+
+                    var alpha=transparency_Percent
+
+ output.setRGB(x,y,Color(r, g, b,alpha).rgb)
+                }
+            }
+
+            val imageFile = File(out_File)
+            ImageIO.write(output, out_File.split(".")[1], imageFile)
+
+            println("The watermarked image $out_File has been created.")
+        }
+
     fun Percentage(){
         println("Input the watermark transparency percentage (Integer 0-100):")
         var temp = readln()
@@ -82,8 +118,11 @@ class watermark(){
             println("The transparency percentage is out of range.")
             exitProcess(0)
         }
+        transparency_Percent=temp.toInt()
     }
     fun add_watermark(){
+        //  println("Input the image filename:")
+
         watermark.set_name()
         watermark.get_info()
         if (Height!=watermark.Height||Width!=watermark.Width){
@@ -123,7 +162,6 @@ class watermark(){
             pixel = image.colorModel.pixelSize
             Transparency = image.transparency
         }
-
         var a = arrayOf<Int>(24,32)
         if(pixel !in a){
             if(name=="test\\grey.png"){
@@ -158,7 +196,21 @@ Bits per pixel: $pixel
             3 -> println("Transparency: TRANSLUCENT")
         }
     }
+    fun set_OutFile(){
+        println("Input the output image filename (jpg or png extension):")
+        var input = readln()
+        if(!".+\\.(jp|pn)g".toRegex().matches(input)){
+            println("The output file extension isn't \"jpg\" or \"png\".")
+            exitProcess(0)
+        }
+        // out_File=input
+        out_File=input
+    }
+    fun saveImage(image: BufferedImage, imageFile: File) {
+        ImageIO.write(image, out_File.substring(out_File.length-4,out_File.length-1), imageFile)
+    }
 }
+
 fun main() {
     val game = watermark()
 }
